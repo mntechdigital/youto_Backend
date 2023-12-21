@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id          String       @id @default(uuid())
+  name        String
+  age         Int          @default(0)
+  gender      String       @default("Male")
+  email       String       @unique
+  password    String?
+  image       String?
+  created_at  DateTime     @default(now())
+  status      String       @default("Active")
+  preferences Preference[]
+  News        News[]
+  Comment     Comment[]
+  Report      Report[]
+  VideoNews   VideoNews[]
+  Bookmark    Bookmark[]
+}
+
+model Preference {
+  id         String   @id @default(uuid())
+  category   String
+  user       Customer @relation(fields: [customerId], references: [id])
+  customerId String
+}
+
+model AdminUser {
+  id            String      @id @default(uuid())
+  name          String
+  email         String      @unique
+  contactNumber String
+  password      String?
+  image         String?
+  created_at    DateTime    @default(now())
+  role          AdminRole?  @relation(fields: [roleId], references: [id])
+  roleId        String?
+  status        String      @default("Active")
+  News          News[]
+  Comment       Comment[]
+  Report        Report[]
+  VideoNews     VideoNews[]
+  Bookmark      Bookmark[]
+}
+
+model AdminRole {
+  id            String          @id @default(uuid())
+  roleName      String
+  AdminUser     AdminUser[]
+  AdminFeatures AdminFeatures[]
+}
+
+model AdminFeatures {
+  id               String             @id @default(uuid())
+  featuresName     String
+  created_at       DateTime           @default(now())
+  adminRoleId      String?
+  AdminRole        AdminRole?         @relation(fields: [adminRoleId], references: [id])
+  AdminSubFeatures AdminSubFeatures[]
+  sidebarIcon      String?
+  index            Int?
+}
+
+model AdminSubFeatures {
+  id              String        @id @default(uuid())
+  subFeaturesName String
+  featuresId      String
+  AdminFeatures   AdminFeatures @relation(fields: [featuresId], references: [id])
+}
+
+model News {
+  id            String     @id @default(uuid())
+  title         String
+  content       String     @db.LongText
+  thumbnail     String
+  category      String
+  customer      Customer?  @relation(fields: [authorId], references: [id])
+  authorId      String?
+  adminUser     AdminUser? @relation(fields: [adminUserId], references: [id])
+  adminUserId   String?
+  created_at    DateTime   @default(now())
+  status        String     @default("Pending")
+  LikeCount     Int        @default(0)
+  commentCount  Int        @default(0)
+  shareCount    Int        @default(0)
+  ReportCount   Int        @default(0)
+  bookmarkCount Int        @default(0)
+  isDisable     Boolean    @default(false)
+  Comment       Comment[]
+  Report        Report[]
+  Bookmark      Bookmark[]
+}
+
+model Comment {
+  id          String     @id @default(uuid())
+  news        News       @relation(fields: [newsId], references: [id])
+  customer    Customer?  @relation(fields: [customerId], references: [id])
+  customerId  String?
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
+  adminUserId String?
+  newsId      String
+  comment     String
+  VideoNews   VideoNews? @relation(fields: [videoNewsId], references: [id])
+  videoNewsId String?
+}
+
+model Report {
+  id          String     @id @default(uuid())
+  news        News       @relation(fields: [newsId], references: [id])
+  newsId      String
+  customer    Customer?  @relation(fields: [customerId], references: [id])
+  customerId  String?
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
+  adminUserId String?
+  reason      String
+  VideoNews   VideoNews? @relation(fields: [videoNewsId], references: [id])
+  videoNewsId String?
+}
+
+model Bookmark {
+  id          String    @id @default(uuid())
+  news        News      @relation(fields: [newsId], references: [id])
+  newsId      String
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  customerId  String
+  videoNews   VideoNews @relation(fields: [videoNewsId], references: [id])
+  videoNewsId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id])
+  adminUserId String
+}
+
+model VideoNews {
+  id            String     @id @default(uuid())
+  title         String
+  content       String     @db.LongText
+  thumbnail     String?
+  videoUrl      String
+  category      String
+  customer      Customer?  @relation(fields: [authorId], references: [id])
+  authorId      String?
+  adminUser     AdminUser? @relation(fields: [adminUserId], references: [id])
+  adminUserId   String?
+  created_at    DateTime   @default(now())
+  status        String     @default("Pending")
+  LikeCount     Int        @default(0)
+  commentCount  Int        @default(0)
+  shareCount    Int        @default(0)
+  ReportCount   Int        @default(0)
+  bookmarkCount Int        @default(0)
+  isDisable     Boolean    @default(false)
+  Comment       Comment[]
+  Report        Report[]
+  Bookmark      Bookmark[]
+}
+
+model Advertisement {
+  id         String   @id @default(uuid())
+  image      String?
+  title      String?
+  created_at DateTime @default(now())
+  status     String   @default("Active")
+}

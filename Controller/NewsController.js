@@ -466,5 +466,36 @@ export const decrementLikeCount = async (req, res) => {
 };
 
 
+// top news
+export const getTopNewsByCategoryWithPagination = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 10;
+  const skip = (page -1) * pageSize;
+  try {
+    const topNews = await prisma.news.findMany({
+      orderBy: {
+        LikeCount: 'desc'
+      },
+      skip: skip,
+      take: pageSize,
+      include: {
+        adminUser: true,
+        customer: true,
+        Comment: {
+          include: {
+            customer: true,
+            adminUser: true
+          }
+        },
+        Report: true
+      }
+    })
+  } catch (error) {
+    console.log(`Error finding top news: ${error}`)
+    return res.status
+  }
+}
+
+
 
 

@@ -27,7 +27,7 @@ export const createCustomer = async (req, res) => {
       gender,
       preferences: {
         create: preferences.map((category) => ({
-          category: category.toString(), // Ensure category is a string
+          category: category.toString(), 
         })),
       },
     },

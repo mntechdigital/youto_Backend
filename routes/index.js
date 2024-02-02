@@ -7,6 +7,7 @@ import NewsRoutes from "./newsRouts.js";
 import CommentRoutes from "./commentRoutes.js";
 import VideoNewsRoutes from "./videoNewsRoutes.js"
 import AdvertisementRoutes from "./advertisementRoutes.js"
+import CategoriesRoutes from "./categoriesRoutes.js"
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/api/news", NewsRoutes);
 router.use("/api/comment", CommentRoutes);
 router.use("/api/videoNews", VideoNewsRoutes);
 router.use("/api/advertisement", AdvertisementRoutes);
+router.use("/api/categories", CategoriesRoutes)
 
 export default router;

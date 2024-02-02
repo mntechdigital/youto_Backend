@@ -2,92 +2,117 @@ import prisma from "../DB/db.config.js";
 
 // create customer
 export const createCustomer = async (req, res) => {
-  const { name, email, image, password, age, gender, preferences } = req.body;
+  try {
+    const { name, email, image, password, age, gender, preferences } = req.body;
 
-  const findUser = await prisma.customer.findUnique({
-    where: {
-      email: email,
-    },
-  });
+    const findUser = await prisma.customer.findUnique({
+      where: {
+        email: email,
+      },
+    });
 
-  if (findUser) {
+    if (findUser) {
+      return res.json({
+        status: 400,
+        message: "Email Already Taken. Please enter another email",
+      });
+    }
+
+    const newUser = await prisma.customer.create({
+      data: {
+        name,
+        email,
+        image,
+        password,
+        age,
+        gender,
+        preferences: {
+          create: preferences.map((category) => ({
+            categoryId: category.id,
+          })),
+        },
+      },
+    });
+
+    return res.json({ status: 200, data: newUser, message: "User Created" });
+  } catch (error) {
     return res.json({
-      status: 400,
-      message: "Email Already Taken. Please enter another email",
+      status: 500,
+      message: "Server Error",
+      error: error.message,
     });
   }
-
-  const newUser = await prisma.customer.create({
-    data: {
-      name,
-      email,
-      image,
-      password,
-      age,
-      gender,
-      preferences: {
-        create: preferences.map((category) => ({
-          category: category.toString(), 
-        })),
-      },
-    },
-  });
-
-  return res.json({ status: 200, data: newUser, message: "User Created" });
 };
 
-// // get all users
-// export const getAllUsers = async (req, res) => {
-//   const getAllUsers = await prisma.user.findMany();
-//   return res.json({ status: 200, data: getAllUsers, message: "All Users" });
-// };
+// get customer by id
+export const getCustomerById = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const getCustomerById = await prisma.customer.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        preferences: {
+          include: {
+            Category: true,
+          },
+        },
+      },
+    });
+    return res.json({
+      status: 200,
+      data: getCustomerById,
+      message: "User Found",
+    });
+  } catch (error) {
+    console.log(`Error getting customer by id: ${error.message}`);
+    return res.json({
+      status: 500,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
 
-// // get user by id
-// export const getUserById = async (req, res) => {
-//   const id = req.params.id;
-//   const getUserById = await prisma.user.findFirst({
-//     where: {
-//       id: `${id}`,
-//     },
-//   });
-//   return res.json({ status: 200, data: getUserById, message: "User Found" });
-// };
+export const getCategoriesNameWithoutDuplicateByCustomerId = async (
+  req,
+  res
+) => {
+  const id = req.params.id;
+  try {
+    const preferences = await prisma.preference.findMany({
+      where: {
+        customerId: id,
+      },
+      select: {
+        Category: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
+    });
 
-// // update user by id
-// export const updateUserById = async (req, res) => {
-//   const id = req.params.id;
-//   const { name, email, photo, password } = req.body;
+    const categories = preferences.map((preference) => preference.Category);
+    const distinctCategories = Array.from(
+      new Set(categories.map((category) => category.id))
+    ).map((id) => {
+      return categories.find((category) => category.id === id);
+    });
 
-//   const updateUserById = await prisma.user.update({
-//     where: {
-//       id: `${id}`,
-//     },
-//     data: {
-//       name,
-//       email,
-//       photo,
-//       password,
-//     },
-//   });
-//   return res.json({
-//     status: 200,
-//     data: updateUserById,
-//     message: "User Updated",
-//   });
-// };
-
-// // delete user by id
-// export const deleteUserById = async (req, res) => {
-//   const id = req.params.id;
-//   const deleteUserById = await prisma.user.delete({
-//     where: {
-//       id: `${id}`,
-//     },
-//   });
-
-//   return res.json({
-//     status: 200,
-//     data: deleteUserById,
-//     message: "User Deleted",
-//   });
-// };
+    return res.json({
+      status: 200,
+      data: distinctCategories,
+      message: "User Found",
+    });
+  } catch (error) {
+    console.log(`Error getting customer by id: ${error.message}`);
+    return res.json({
+      status: 500,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};

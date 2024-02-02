@@ -12,6 +12,7 @@ import {
   getNewsById,
   getSportNews,
   getTopNews,
+  getTopNewsByCategoryWithPagination,
   incrementLikeCount,
   updateNewsById,
 } from "../Controller/NewsController.js";
@@ -23,6 +24,7 @@ router.get("/", getAllNews);
 router.get("/all", getNewsAll);
 router.get("/sportsNews", getSportNews);
 router.get("/topNews", getTopNews);
+router.get("/topNewsPagination", getTopNewsByCategoryWithPagination);
 router.get("/allCategoryNews/:category", getAllNewsByCategory);
 router.get("/all?take=4?skip=4", getNewsAllWithPagination);
 router.get("/recentNews", getLatestNews);

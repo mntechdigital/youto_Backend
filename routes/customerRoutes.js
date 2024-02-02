@@ -1,11 +1,19 @@
-import {Router} from "express"
-import { createCustomer } from "../Controller/CustomerController.js";
+import { Router } from "express";
+import {
+  createCustomer,
+  getCategoriesNameWithoutDuplicateByCustomerId,
+  getCustomerById,
+} from "../Controller/CustomerController.js";
 
-const router = Router()
+const router = Router();
 
-router.post("/", createCustomer)
+router.post("/", createCustomer);
 // router.get("/", getAllUsers)
-// router.get("/:id", getUserById)
+router.get("/:id", getCustomerById);
+router.get(
+  "/forCategoriesNames/:id",
+  getCategoriesNameWithoutDuplicateByCustomerId
+);
 // router.put("/:id", updateUserById)
 // router.delete("/:id", deleteUserById)
 

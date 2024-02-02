@@ -11,12 +11,18 @@ export const createNews = async (req, res) => {
         .json({ error: "Provide either authorId or adminUserId" });
     }
 
+    const newCategory = await prisma.categories.create({
+      data: {
+        name: category,
+      }
+    })
+
     const newNews = await prisma.news.create({
       data: {
         title,
         content,
         thumbnail,
-        category,
+        categoryId: newCategory.id,
         authorId,
         adminUserId,
       },
@@ -360,7 +366,6 @@ export const getTopNews = async (req, res) => {
   }
 };
 
-
 // find all news by category
 export const getAllNewsByCategory = async (req, res) => {
   const category = req.params.category;
@@ -465,16 +470,15 @@ export const decrementLikeCount = async (req, res) => {
   }
 };
 
-
 // top news
 export const getTopNewsByCategoryWithPagination = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = 10;
-  const skip = (page -1) * pageSize;
+  const skip = (page - 1) * pageSize;
   try {
     const topNews = await prisma.news.findMany({
       orderBy: {
-        LikeCount: 'desc'
+        LikeCount: "desc",
       },
       skip: skip,
       take: pageSize,
@@ -484,18 +488,34 @@ export const getTopNewsByCategoryWithPagination = async (req, res) => {
         Comment: {
           include: {
             customer: true,
-            adminUser: true
-          }
+            adminUser: true,
+          },
         },
-        Report: true
-      }
-    })
+        Report: {
+          include: {
+            customer: true,
+            adminUser: true,
+          },
+        },
+      },
+    });
+
+    const totalNewsCount = await prisma.news.count();
+
+    const totalPages = Math.ceil(totalNewsCount / pageSize);
+
+    return res.json({
+      status: 200,
+      data: topNews,
+      totalPages: totalPages,
+      currentPage: page,
+      message: "Top News Found",
+    });
   } catch (error) {
-    console.log(`Error finding top news: ${error}`)
-    return res.status
+    console.log(`Error finding top news: ${error}`);
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
   }
-}
-
-
-
-
+};

@@ -11,22 +11,24 @@ datasource db {
 }
 
 model Customer {
-  id          String       @id @default(uuid())
-  name        String
-  age         Int          @default(0)
-  gender      String       @default("Male")
-  email       String       @unique
-  password    String?
-  image       String?
-  created_at  DateTime     @default(now())
-  status      String       @default("Active")
-  role        String       @default("Customer")
-  preferences Preference[]
-  News        News[]
-  Comment     Comment[]
-  Report      Report[]
-  VideoNews   VideoNews[]
-  Bookmark    Bookmark[]
+  id            String          @id @default(uuid())
+  name          String
+  age           Int             @default(0)
+  gender        String          @default("Male")
+  email         String          @unique
+  password      String?
+  image         String?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @default(now()) @updatedAt
+  status        String          @default("Active")
+  role          String          @default("Customer")
+  preferences   Preference[]
+  News          News[]
+  Comment       Comment[]
+  Report        Report[]
+  VideoNews     VideoNews[]
+  Bookmark      Bookmark[]
+  ReplayComment ReplayComment[]
 }
 
 model Preference {
@@ -38,26 +40,30 @@ model Preference {
 }
 
 model AdminUser {
-  id            String      @id @default(uuid())
+  id            String          @id @default(uuid())
   name          String
-  email         String      @unique
+  email         String          @unique
   contactNumber String
   password      String?
   image         String?
-  created_at    DateTime    @default(now())
-  role          AdminRole?  @relation(fields: [roleId], references: [id])
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @default(now()) @updatedAt
+  role          AdminRole?      @relation(fields: [roleId], references: [id])
   roleId        String?
-  status        String      @default("Active")
+  status        String          @default("Active")
   News          News[]
   Comment       Comment[]
   Report        Report[]
   VideoNews     VideoNews[]
   Bookmark      Bookmark[]
+  ReplayComment ReplayComment[]
 }
 
 model AdminRole {
   id            String          @id @default(uuid())
   roleName      String
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @default(now()) @updatedAt
   AdminUser     AdminUser[]
   AdminFeatures AdminFeatures[]
 }
@@ -92,6 +98,7 @@ model News {
   Category      Categories @relation(fields: [categoryId], references: [id])
   categoryId    String
   created_at    DateTime   @default(now())
+  updated_at    DateTime   @default(now()) @updatedAt
   status        String     @default("Pending")
   LikeCount     Int        @default(0)
   commentCount  Int        @default(0)
@@ -108,34 +115,62 @@ model Categories {
   id         String       @id @default(uuid())
   name       String
   created_at DateTime     @default(now())
+  updated_at DateTime     @default(now()) @updatedAt
   news       News[]
   Preference Preference[]
 }
 
 model Comment {
+  id            String          @id @default(uuid())
+  news          News            @relation(fields: [newsId], references: [id])
+  customer      Customer?       @relation(fields: [customerId], references: [id])
+  customerId    String?
+  adminUser     AdminUser?      @relation(fields: [adminUserId], references: [id])
+  adminUserId   String?
+  newsId        String
+  comment       String
+  VideoNews     VideoNews?      @relation(fields: [videoNewsId], references: [id])
+  videoNewsId   String?
+  ReplayComment ReplayComment[]
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @default(now()) @updatedAt
+}
+
+model ReplayComment {
   id          String     @id @default(uuid())
-  news        News       @relation(fields: [newsId], references: [id])
-  customer    Customer?  @relation(fields: [customerId], references: [id])
+  comment     Comment    @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId   String
+  customer    Customer?  @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId  String?
-  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
   adminUserId String?
-  newsId      String
-  comment     String
-  VideoNews   VideoNews? @relation(fields: [videoNewsId], references: [id])
-  videoNewsId String?
+  replay      String
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @default(now()) @updatedAt
 }
 
 model Report {
-  id          String     @id @default(uuid())
-  news        News       @relation(fields: [newsId], references: [id])
-  newsId      String
-  customer    Customer?  @relation(fields: [customerId], references: [id])
-  customerId  String?
-  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
-  adminUserId String?
-  reason      String
-  VideoNews   VideoNews? @relation(fields: [videoNewsId], references: [id])
-  videoNewsId String?
+  id           String         @id @default(uuid())
+  news         News           @relation(fields: [newsId], references: [id])
+  newsId       String
+  customer     Customer?      @relation(fields: [customerId], references: [id])
+  customerId   String?
+  adminUser    AdminUser?     @relation(fields: [adminUserId], references: [id])
+  adminUserId  String?
+  VideoNews    VideoNews?     @relation(fields: [videoNewsId], references: [id])
+  videoNewsId  String?
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @default(now()) @updatedAt
+  ReportReason ReportReason[]
+}
+
+model ReportReason {
+  id         String   @id @default(uuid())
+  reason     String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+  reportId   String
+  Report     Report   @relation(fields: [reportId], references: [id])
 }
 
 model Bookmark {
@@ -148,6 +183,8 @@ model Bookmark {
   videoNewsId String?
   AdminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
   adminUserId String?
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @default(now()) @updatedAt
 }
 
 model VideoNews {
@@ -162,6 +199,7 @@ model VideoNews {
   adminUser     AdminUser? @relation(fields: [adminUserId], references: [id])
   adminUserId   String?
   created_at    DateTime   @default(now())
+  updated_at    DateTime   @default(now()) @updatedAt
   status        String     @default("Pending")
   LikeCount     Int        @default(0)
   commentCount  Int        @default(0)
@@ -179,5 +217,6 @@ model Advertisement {
   image      String?
   title      String?
   created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
   status     String   @default("Active")
 }

@@ -136,7 +136,16 @@ export const getNewsById = async (req, res) => {
           include: {
             customer: true,
             adminUser: true,
+            ReplayComment: {
+              include: {
+                customer: true,
+                adminUser: true,
+              }
+            }
           },
+          orderBy: {
+            created_at: "desc"
+          }
         },
       },
     });

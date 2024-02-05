@@ -116,3 +116,33 @@ export const getCategoriesNameWithoutDuplicateByCustomerId = async (
     });
   }
 };
+
+export const getCustomerByEmail = async (req, res) => {
+  const email = req.params.email;
+  try {
+    const getCustomerByEmail = await prisma.customer.findUnique({
+      where: {
+        email: email,
+      },
+      include: {
+        preferences: {
+          include: {
+            Category: true,
+          },
+        },
+      },
+    });
+    return res.json({
+      status: 200,
+      data: getCustomerByEmail,
+      message: "User Found",
+    });
+  } catch (error) {
+    console.log(`Error getting customer by email: ${error.message}`);
+    return res.json({
+      status: 500,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};

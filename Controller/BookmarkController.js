@@ -2,7 +2,7 @@ import prisma from "../DB/db.config.js";
 
 export const createBookmark = async (req, res) => {
   try {
-    const { customerId, newsId, videoNewsId, adminUserId } = req.body;
+    const { customerId, newsId, videoNewsId } = req.body;
 
     await prisma.news.update({
       where: {
@@ -20,7 +20,6 @@ export const createBookmark = async (req, res) => {
         customerId,
         newsId,
         videoNewsId,
-        adminUserId,
       },
     });
 
@@ -37,6 +36,34 @@ export const createBookmark = async (req, res) => {
     });
   }
 };
+
+
+export const getBookmarks = async (req, res) => {
+  const customerId = req.params.id;
+
+  try {
+    const bookmarks = await prisma.bookmark.findMany({
+      where: {
+        customerId: customerId,
+      },
+      include: {
+        news: true,
+      },
+    });
+
+    return res.json({
+      status: 200,
+      data: bookmarks,
+      message: "All Bookmarks",
+    });
+  } catch (error) {
+    console.error("Error getting all bookmarks:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+}
 
 // bookmark delete
 export const deleteBookmark = async (req, res) => {

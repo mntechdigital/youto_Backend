@@ -14,8 +14,8 @@ export const createNews = async (req, res) => {
     const newCategory = await prisma.categories.create({
       data: {
         name: category,
-      }
-    })
+      },
+    });
 
     const newNews = await prisma.news.create({
       data: {
@@ -75,29 +75,44 @@ export const getNewsAll = async (req, res) => {
 };
 
 export const getNewsAllWithPagination = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 4;
+  const skip = (page - 1) * pageSize;
   try {
-    const takeLimit = req.query.take;
-    const skipLimit = req.query.skip;
-    const allNews = await prisma.news.findMany({
-      skip: +skipLimit,
-      take: +takeLimit,
+    const news = await prisma.news.findMany({
+      skip: skip,
+      take: pageSize,
       include: {
+        adminUser: true,
+        customer: true,
         Comment: {
           include: {
-            adminUser: true,
             customer: true,
+            adminUser: true,
+          },
+        },
+        Report: {
+          include: {
+            customer: true,
+            adminUser: true,
           },
         },
       },
     });
 
+    const totalNewsCount = await prisma.news.count();
+
+    const totalPages = Math.ceil(totalNewsCount / pageSize);
+
     return res.json({
       status: 200,
-      data: allNews,
-      message: "All News Found",
+      data: news,
+      totalPages: totalPages,
+      currentPage: page,
+      message: "Top News Found",
     });
   } catch (error) {
-    console.error("Error finding all news:", error);
+    console.log(`Error finding top news: ${error}`);
     return res.status(500).json({
       status: 500,
       message: "Internal Server Error",
@@ -271,7 +286,6 @@ export const getSportNews = async (req, res) => {
       data: sportNews,
       message: "Sport News Found",
     });
-    console.log(sportNews);
   } catch (error) {
     return res.status(500).json({
       status: 500,
@@ -368,19 +382,28 @@ export const getTopNews = async (req, res) => {
 
 // find all news by category
 export const getAllNewsByCategory = async (req, res) => {
-  const category = req.params.category;
+  const page = Number(req.query.page) || 1;
+  const pageSize = 10;
+  const skip = (page - 1) * pageSize;
+  const categoryId = req.params.id;
 
   try {
     const findNews = await prisma.news.findMany({
       where: {
-        category: category,
+        categoryId: categoryId,
       },
-      skip: 0,
-      take: 10,
+      skip: skip,
+      take: pageSize,
       include: {
         adminUser: true,
         customer: true,
         Comment: {
+          include: {
+            customer: true,
+            adminUser: true,
+          },
+        },
+        Report: {
           include: {
             customer: true,
             adminUser: true,
@@ -396,9 +419,19 @@ export const getAllNewsByCategory = async (req, res) => {
       });
     }
 
+    const totalNewsCount = await prisma.news.count({
+      where: {
+        categoryId: categoryId,
+      },
+    });
+
+    const totalPages = Math.ceil(totalNewsCount / pageSize);
+
     return res.json({
       status: 200,
       data: findNews,
+      totalPages: totalPages,
+      currentPage: page,
       message: "News Found",
     });
   } catch (error) {
@@ -409,6 +442,8 @@ export const getAllNewsByCategory = async (req, res) => {
     });
   }
 };
+
+
 
 // LikeCount increment by 1 when user likes a news
 export const incrementLikeCount = async (req, res) => {

@@ -139,15 +139,15 @@ model Report {
 }
 
 model Bookmark {
-  id          String    @id @default(uuid())
-  news        News      @relation(fields: [newsId], references: [id])
-  newsId      String
-  customer    Customer  @relation(fields: [customerId], references: [id])
+  id          String     @id @default(uuid())
+  news        News?      @relation(fields: [newsId], references: [id])
+  newsId      String?
+  customer    Customer   @relation(fields: [customerId], references: [id])
   customerId  String
-  videoNews   VideoNews @relation(fields: [videoNewsId], references: [id])
-  videoNewsId String
-  adminUser   AdminUser @relation(fields: [adminUserId], references: [id])
-  adminUserId String
+  videoNews   VideoNews? @relation(fields: [videoNewsId], references: [id])
+  videoNewsId String?
+  AdminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
+  adminUserId String?
 }
 
 model VideoNews {

@@ -1,9 +1,8 @@
 import prisma from "../DB/db.config.js";
 
 export const createComment = async (req, res) => {
+  const { customerId, adminUserId, newsId, comment, videoNewsId } = req.body;
   try {
-    const { customerId, adminUserId, newsId, comment, videoNewsId } = req.body;
-
     await prisma.news.update({
       where: {
         id: newsId,

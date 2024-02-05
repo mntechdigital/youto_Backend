@@ -4,6 +4,21 @@ export const createBookmark = async (req, res) => {
   try {
     const { customerId, newsId, videoNewsId } = req.body;
 
+    // if already bookmarked then return
+    const findBookmark = await prisma.bookmark.findFirst({
+      where: {
+        customerId,
+        newsId,
+      },
+    });
+
+    if (findBookmark) {
+      return res.json({
+        status: 400,
+        message: "Already Bookmarked",
+      });
+    }
+
     await prisma.news.update({
       where: {
         id: newsId,
@@ -37,7 +52,6 @@ export const createBookmark = async (req, res) => {
   }
 };
 
-
 export const getBookmarks = async (req, res) => {
   const customerId = req.params.id;
 
@@ -63,7 +77,7 @@ export const getBookmarks = async (req, res) => {
       message: "Internal Server Error",
     });
   }
-}
+};
 
 // bookmark delete
 export const deleteBookmark = async (req, res) => {

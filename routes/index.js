@@ -9,6 +9,7 @@ import VideoNewsRoutes from "./videoNewsRoutes.js";
 import AdvertisementRoutes from "./advertisementRoutes.js";
 import CategoriesRoutes from "./categoriesRoutes.js";
 import BookMarkRoutes from "./bookmarkRoutes.js";
+import ReportRoutes from "./reportRoutes.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/api/videoNews", VideoNewsRoutes);
 router.use("/api/advertisement", AdvertisementRoutes);
 router.use("/api/categories", CategoriesRoutes);
 router.use("/api/bookmarks", BookMarkRoutes);
+router.use("/api/reports", ReportRoutes);
 
 export default router;

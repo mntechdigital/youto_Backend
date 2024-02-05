@@ -484,7 +484,7 @@ export const incrementLikeCount = async (req, res) => {
   }
 };
 
-// LikeCount Decrement by 1 when user unlikes a news
+// LikeCount Decrement by 1 when user unlike a news
 export const decrementLikeCount = async (req, res) => {
   const id = req.params.id;
 

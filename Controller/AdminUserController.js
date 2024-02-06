@@ -87,3 +87,69 @@ export const getAdminUserByEmail = async (req, res) => {
     });
   }
 };
+
+// get current user id by email
+export const getCurrentUserIdByEmail = async (req, res) => {
+  const email = req.params.email;
+
+  try {
+    const findAdminUser = await prisma.adminUser.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    const findCustomer = await prisma.customer.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (findAdminUser) {
+      return res.json(findAdminUser.id);
+    } else if (findCustomer) {
+      res.json(findCustomer.id);
+    } else {
+      return res.json(null);
+    }
+  } catch (error) {
+    console.error("Error deleting all features:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+// get role by email
+export const getCurrentRoleByEmail = async (req, res) => {
+  const email = req.params.email;
+
+  try {
+    const findAdminUser = await prisma.adminUser.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    const findCustomer = await prisma.customer.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (findAdminUser) {
+      return res.json("admin");
+    } else if (findCustomer) {
+      return res.json("customer");
+    } else {
+      return res.json(null);
+    }
+  } catch (error) {
+    console.error("Error deleting all features:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};

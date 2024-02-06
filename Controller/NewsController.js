@@ -102,6 +102,10 @@ export const getNewsAllWithPagination = async (req, res) => {
         Bookmark: {
           where: {
             customerId: customerId,
+          },
+          select: {
+            id: true,
+            customerId: true,
           }
         }
       },
@@ -293,7 +297,7 @@ export const getSportNews = async (req, res) => {
   try {
     const sportNews = await prisma.news.findMany({
       where: {
-        category: "Sports",
+        Category: "Sports",
       },
     });
 

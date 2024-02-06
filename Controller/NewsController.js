@@ -78,6 +78,8 @@ export const getNewsAllWithPagination = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = 4;
   const skip = (page - 1) * pageSize;
+  const customerId = req.params.id;
+
   try {
     const news = await prisma.news.findMany({
       skip: skip,
@@ -97,6 +99,11 @@ export const getNewsAllWithPagination = async (req, res) => {
             adminUser: true,
           },
         },
+        Bookmark: {
+          where: {
+            customerId: customerId,
+          }
+        }
       },
     });
 
@@ -144,7 +151,7 @@ export const getNewsById = async (req, res) => {
             }
           },
           orderBy: {
-            created_at: "desc"
+            created_at: "asc"
           }
         },
       },

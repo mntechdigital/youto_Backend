@@ -26,7 +26,7 @@ router.get("/sportsNews", getSportNews);
 router.get("/topNews", getTopNews);
 router.get("/topNewsPagination", getTopNewsByCategoryWithPagination);
 router.get("/allCategoryNews/:id", getAllNewsByCategory);
-router.get("/allPagination", getNewsAllWithPagination);
+router.get("/allPagination/:id", getNewsAllWithPagination);
 router.get("/recentNews", getLatestNews);
 router.get("/:id", getNewsById);
 router.get("/categories/:id/:category", getNewsByCategory);

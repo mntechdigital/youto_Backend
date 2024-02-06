@@ -100,14 +100,14 @@ export const getNewsAllWithPagination = async (req, res) => {
           },
         },
         Bookmark: {
-          where: {
-            customerId: customerId,
-          },
           select: {
             id: true,
             customerId: true,
-          }
-        }
+          },
+          where: {
+            customerId: customerId,
+          },
+        },
       },
     });
 
@@ -151,12 +151,12 @@ export const getNewsById = async (req, res) => {
               include: {
                 customer: true,
                 adminUser: true,
-              }
-            }
+              },
+            },
           },
           orderBy: {
-            created_at: "asc"
-          }
+            created_at: "asc",
+          },
         },
       },
     });
@@ -462,8 +462,6 @@ export const getAllNewsByCategory = async (req, res) => {
     });
   }
 };
-
-
 
 // LikeCount increment by 1 when user likes a news
 export const incrementLikeCount = async (req, res) => {

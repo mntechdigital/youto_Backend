@@ -29,6 +29,7 @@ model Customer {
   VideoNews     VideoNews[]
   Bookmark      Bookmark[]
   ReplayComment ReplayComment[]
+  Ban           Ban[]
 }
 
 model Preference {
@@ -57,6 +58,7 @@ model AdminUser {
   VideoNews     VideoNews[]
   Bookmark      Bookmark[]
   ReplayComment ReplayComment[]
+  Ban           Ban[]
 }
 
 model AdminRole {
@@ -109,6 +111,7 @@ model News {
   Comment       Comment[]
   Report        Report[]
   Bookmark      Bookmark[]
+  Ban           Ban[]
 }
 
 model Categories {
@@ -182,6 +185,18 @@ model Bookmark {
   videoNews   VideoNews? @relation(fields: [videoNewsId], references: [id])
   videoNewsId String?
   AdminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
+  adminUserId String?
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @default(now()) @updatedAt
+}
+
+model Ban {
+  id          String     @id @default(uuid())
+  news        News?      @relation(fields: [newsId], references: [id])
+  newsId      String?
+  customer    Customer?   @relation(fields: [customerId], references: [id])
+  customerId  String?
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
   adminUserId String?
   created_at  DateTime   @default(now())
   updated_at  DateTime   @default(now()) @updatedAt

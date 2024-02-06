@@ -3,6 +3,7 @@ import {
   createAdminUser,
   getAdminUserByEmail,
   getCurrentRoleByEmail,
+  getCurrentUserByEmail,
   getCurrentUserIdByEmail,
 } from "../Controller/AdminUserController.js";
 
@@ -12,5 +13,6 @@ router.post("/", createAdminUser);
 router.get("/:email", getAdminUserByEmail);
 router.get("/role/:email", getCurrentRoleByEmail);
 router.get("/id/:email", getCurrentUserIdByEmail);
+router.get("/currentUser/:email", getCurrentUserByEmail);
 
 export default router;

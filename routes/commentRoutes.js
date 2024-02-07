@@ -18,7 +18,7 @@ router.get("/newestComment/:id", getCommentsNewByNewsId);
 router.get("/oldestComment/:id", getCommentsOldByNewsId);
 router.put("/:id", updateComment);
 router.put("/replayComment/:id", updateReplayComment);
-router.delete("/:id", deleteComment);
+router.delete("/:id/:newsId", deleteComment);
 router.delete("/replayComment/:id", deleteReplayComment);
 
 export default router;

@@ -11,6 +11,19 @@ export const createNews = async (req, res) => {
         .json({ error: "Provide either authorId or adminUserId" });
     }
 
+    const findCategory = await prisma.categories.findFirst({
+      where: {
+        name: category,
+      },
+    });
+
+    if (findCategory) {
+      return res.status(400).json({
+        status: 400,
+        message: "Category already exists",
+      });
+    }
+
     const newCategory = await prisma.categories.create({
       data: {
         name: category,
@@ -297,7 +310,9 @@ export const getSportNews = async (req, res) => {
   try {
     const sportNews = await prisma.news.findMany({
       where: {
-        Category: "Sports",
+        Category: {
+          name: "Sports",
+        },
       },
     });
 
@@ -307,6 +322,7 @@ export const getSportNews = async (req, res) => {
       message: "Sport News Found",
     });
   } catch (error) {
+    console.log(`Error finding sport news: ${error}`);
     return res.status(500).json({
       status: 500,
       message: "Internal Server Error",
@@ -406,7 +422,8 @@ export const getAllNewsByCategory = async (req, res) => {
   const pageSize = 10;
   const skip = (page - 1) * pageSize;
   const categoryId = req.params.id;
-
+  customerId = req.params.customerId;
+  
   try {
     const findNews = await prisma.news.findMany({
       where: {
@@ -421,6 +438,11 @@ export const getAllNewsByCategory = async (req, res) => {
           include: {
             customer: true,
             adminUser: true,
+          },
+        },
+        Bookmark: {
+          where: {
+            customerId: customerId,
           },
         },
         Report: {
@@ -528,6 +550,8 @@ export const getTopNewsByCategoryWithPagination = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = 10;
   const skip = (page - 1) * pageSize;
+  customerId = req.params.customerId;
+
   try {
     const topNews = await prisma.news.findMany({
       orderBy: {
@@ -542,6 +566,11 @@ export const getTopNewsByCategoryWithPagination = async (req, res) => {
           include: {
             customer: true,
             adminUser: true,
+          },
+        },
+        Bookmark: {
+          where: {
+            customerId: customerId,
           },
         },
         Report: {

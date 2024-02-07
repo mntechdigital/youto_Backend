@@ -24,8 +24,11 @@ router.get("/", getAllNews);
 router.get("/all", getNewsAll);
 router.get("/sportsNews", getSportNews);
 router.get("/topNews", getTopNews);
-router.get("/topNewsPagination", getTopNewsByCategoryWithPagination);
-router.get("/allCategoryNews/:id", getAllNewsByCategory);
+router.get(
+  "/topNewsPagination/:customerId",
+  getTopNewsByCategoryWithPagination
+);
+router.get("/allCategoryNews/:id/:customerId", getAllNewsByCategory);
 router.get("/allPagination/:id", getNewsAllWithPagination);
 router.get("/recentNews", getLatestNews);
 router.get("/:id", getNewsById);

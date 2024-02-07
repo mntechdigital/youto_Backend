@@ -11,31 +11,26 @@ export const createNews = async (req, res) => {
         .json({ error: "Provide either authorId or adminUserId" });
     }
 
-    const findCategory = await prisma.categories.findFirst({
+    let findCategory = await prisma.categories.findFirst({
       where: {
         name: category,
       },
     });
 
-    if (findCategory) {
-      return res.status(400).json({
-        status: 400,
-        message: "Category already exists",
+    if (!findCategory) {
+      findCategory = await prisma.categories.create({
+        data: {
+          name: category,
+        },
       });
     }
-
-    const newCategory = await prisma.categories.create({
-      data: {
-        name: category,
-      },
-    });
 
     const newNews = await prisma.news.create({
       data: {
         title,
         content,
         thumbnail,
-        categoryId: newCategory.id,
+        categoryId: findCategory.id,
         authorId,
         adminUserId,
       },
@@ -121,6 +116,42 @@ export const getNewsAllWithPagination = async (req, res) => {
             customerId: customerId,
           },
         },
+      },
+    });
+
+    const totalNewsCount = await prisma.news.count();
+
+    const totalPages = Math.ceil(totalNewsCount / pageSize);
+
+    return res.json({
+      status: 200,
+      data: news,
+      totalPages: totalPages,
+      currentPage: page,
+      message: "Top News Found",
+    });
+  } catch (error) {
+    console.log(`Error finding top news: ${error}`);
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+// get news in the dashboard
+export const getNewsAllWithPaginationInDashboard = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 10;
+  const skip = (page - 1) * pageSize;
+
+  try {
+    const news = await prisma.news.findMany({
+      skip: skip,
+      take: pageSize,
+      include: {
+        adminUser: true,
+        Category: true,
       },
     });
 
@@ -251,10 +282,23 @@ export const getLatestNews = async (req, res) => {
 
 // update news
 export const updateNewsById = async (req, res) => {
-  const id = req.params.id;
-  const { title, content, thumbnail, category } = req.body;
-
   try {
+    const id = req.params.id;
+    const { title, content, thumbnail, category } = req.body;
+
+    let findCategory = await prisma.categories.findFirst({
+      where: {
+        name: category,
+      },
+    });
+
+    if (!findCategory) {
+      findCategory = await prisma.categories.create({
+        data: {
+          name: category,
+        },
+      });
+    }
     const updateNews = await prisma.news.update({
       where: {
         id: id,
@@ -263,7 +307,7 @@ export const updateNewsById = async (req, res) => {
         title,
         content,
         thumbnail,
-        category,
+        categoryId: findCategory.id,
       },
     });
 
@@ -422,8 +466,8 @@ export const getAllNewsByCategory = async (req, res) => {
   const pageSize = 10;
   const skip = (page - 1) * pageSize;
   const categoryId = req.params.id;
-  customerId = req.params.customerId;
-  
+  const customerId = req.params.customerId;
+
   try {
     const findNews = await prisma.news.findMany({
       where: {
@@ -550,7 +594,7 @@ export const getTopNewsByCategoryWithPagination = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = 10;
   const skip = (page - 1) * pageSize;
-  customerId = req.params.customerId;
+  const customerId = req.params.customerId;
 
   try {
     const topNews = await prisma.news.findMany({

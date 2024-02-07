@@ -16,8 +16,8 @@ export const createAdvertisement = async (req, res) => {
       data: newAdvertisement,
       message: "Advertisement Created",
     });
-  } catch(error) {
-    console.log(error)
+  } catch (error) {
+    console.log(error);
     return res.status(500).json({
       status: 500,
       message: "Internal Server Error",
@@ -70,8 +70,7 @@ export const getAdvertisementById = async (req, res) => {
 // update advertisement by id
 export const updateAdvertisementById = async (req, res) => {
   const id = req.params.id;
-  const { image, name } =
-    req.body;
+  const { image, name } = req.body;
 
   try {
     const updateAdvertisement = await prisma.advertisement.update({
@@ -79,8 +78,8 @@ export const updateAdvertisementById = async (req, res) => {
         id: id,
       },
       data: {
-        image, 
-        name
+        image,
+        title,
       },
     });
 

@@ -8,6 +8,7 @@ import {
   getLatestNews,
   getNewsAll,
   getNewsAllWithPagination,
+  getNewsAllWithPaginationInDashboard,
   getNewsByCategory,
   getNewsById,
   getSportNews,
@@ -29,6 +30,10 @@ router.get(
   getTopNewsByCategoryWithPagination
 );
 router.get("/allCategoryNews/:id/:customerId", getAllNewsByCategory);
+router.get(
+  "/allNewsWithPaginationInDashboard",
+  getNewsAllWithPaginationInDashboard
+);
 router.get("/allPagination/:id", getNewsAllWithPagination);
 router.get("/recentNews", getLatestNews);
 router.get("/:id", getNewsById);

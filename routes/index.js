@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import CustomerRoutes from "./customerRoutes.js";
 import FeatureRoutes from "./featuresRoutes.js";
 import RoleRoutes from "./roleRoutes.js";
@@ -10,6 +11,7 @@ import AdvertisementRoutes from "./advertisementRoutes.js";
 import CategoriesRoutes from "./categoriesRoutes.js";
 import BookMarkRoutes from "./bookmarkRoutes.js";
 import ReportRoutes from "./reportRoutes.js";
+import BanRoutes from "./banRoutes.js";
 
 const router = Router();
 
@@ -24,5 +26,6 @@ router.use("/api/advertisement", AdvertisementRoutes);
 router.use("/api/categories", CategoriesRoutes);
 router.use("/api/bookmarks", BookMarkRoutes);
 router.use("/api/reports", ReportRoutes);
+router.use("/api/bans", BanRoutes);
 
 export default router;

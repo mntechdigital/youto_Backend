@@ -194,7 +194,7 @@ model Ban {
   id          String     @id @default(uuid())
   news        News?      @relation(fields: [newsId], references: [id])
   newsId      String?
-  customer    Customer?   @relation(fields: [customerId], references: [id])
+  customer    Customer?  @relation(fields: [customerId], references: [id])
   customerId  String?
   adminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
   adminUserId String?
@@ -228,10 +228,14 @@ model VideoNews {
 }
 
 model Advertisement {
-  id         String   @id @default(uuid())
-  image      String?
-  title      String?
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
-  status     String   @default("Active")
+  id            String   @id @default(uuid())
+  primary1Image String?  @db.Text()
+  primary2Image String?  @db.Text()
+  secondary1    String?  @db.Text()
+  secondary2    String?  @db.Text()
+  tertiary1     String?  @db.Text()
+  tertiary2     String?  @db.Text()
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+  status        String   @default("Active")
 }

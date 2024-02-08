@@ -4,7 +4,7 @@ export const createBookmark = async (req, res) => {
   try {
     const { customerId, newsId, videoNewsId } = req.body;
 
-    // if already bookmarked then return
+
     const findBookmark = await prisma.bookmark.findFirst({
       where: {
         customerId,

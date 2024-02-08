@@ -12,7 +12,7 @@ const router = Router();
 router.post("/", createAdvertisement);
 router.get("/", getAllAdvertisement);
 router.get("/:id", getAdvertisementById);
-router.put("/:id", updateAdvertisementById);
+router.put("/", updateAdvertisementById);
 router.delete("/:id", deleteAdvertisementById);
 
 export default router;

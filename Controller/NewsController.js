@@ -92,6 +92,13 @@ export const getNewsAllWithPagination = async (req, res) => {
     const news = await prisma.news.findMany({
       skip: skip,
       take: pageSize,
+      where: {
+        Ban: {
+          none: {
+            customerId: customerId
+          }
+        }
+      },
       include: {
         adminUser: true,
         customer: true,
@@ -108,6 +115,15 @@ export const getNewsAllWithPagination = async (req, res) => {
           },
         },
         Bookmark: {
+          select: {
+            id: true,
+            customerId: true,
+          },
+          where: {
+            customerId: customerId,
+          },
+        },
+        Ban: {
           select: {
             id: true,
             customerId: true,

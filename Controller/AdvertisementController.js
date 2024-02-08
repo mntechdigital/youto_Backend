@@ -2,12 +2,32 @@ import prisma from "../DB/db.config.js";
 
 export const createAdvertisement = async (req, res) => {
   try {
-    const { image, title } = req.body;
+    const {
+      primary1Image,
+      primary2Image,
+      secondary1,
+      secondary2,
+      tertiary1,
+      tertiary2,
+    } = req.body;
+
+    const findAdvertisement = await prisma.advertisement.findFirst();
+
+    if (findAdvertisement) {
+      return res.json({
+        status: 400,
+        message: "Advertisement Already Exist",
+      });
+    }
 
     const newAdvertisement = await prisma.advertisement.create({
       data: {
-        image,
-        title,
+        primary1Image,
+        primary2Image,
+        secondary1,
+        secondary2,
+        tertiary1,
+        tertiary2,
       },
     });
 
@@ -28,7 +48,7 @@ export const createAdvertisement = async (req, res) => {
 // find all advertisement
 export const getAllAdvertisement = async (req, res) => {
   try {
-    const allAdvertisement = await prisma.advertisement.findMany();
+    const allAdvertisement = await prisma.advertisement.findFirst();
 
     return res.json({
       status: 200,
@@ -69,17 +89,28 @@ export const getAdvertisementById = async (req, res) => {
 
 // update advertisement by id
 export const updateAdvertisementById = async (req, res) => {
-  const id = req.params.id;
-  const { image, name } = req.body;
-
   try {
+    const {
+      primary1Image,
+      primary2Image,
+      secondary1,
+      secondary2,
+      tertiary1,
+      tertiary2,
+    } = req.body;
+    
+    const findAdvertisement = await prisma.advertisement.findFirst();
     const updateAdvertisement = await prisma.advertisement.update({
       where: {
-        id: id,
+        id: findAdvertisement.id,
       },
       data: {
-        image,
-        title,
+        primary1Image,
+        primary2Image,
+        secondary1,
+        secondary2,
+        tertiary1,
+        tertiary2,
       },
     });
 
@@ -96,7 +127,6 @@ export const updateAdvertisementById = async (req, res) => {
   }
 };
 
-// delete advertisement by id
 export const deleteAdvertisementById = async (req, res) => {
   const id = req.params.id;
 

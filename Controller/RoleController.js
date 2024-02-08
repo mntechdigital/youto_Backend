@@ -3,6 +3,17 @@ import prisma from "../DB/db.config.js";
 export const createRole = async (req, res) => {
   try {
     const { roleName, features } = req.body;
+    const roleExists = await prisma.adminRole.findFirst({
+      where: {
+        roleName,
+      },
+    });
+    if (roleExists) {
+      return res.json({
+        success: false,
+        error: "Role already exists",
+      });
+    }
 
     // Create AdminRole
     const adminRole = await prisma.adminRole.create({
@@ -41,13 +52,10 @@ export const createRole = async (req, res) => {
 export const getAllRoles = async (req, res) => {
   try {
     const getAllRoles = await prisma.adminRole.findMany({
-      include: {
-        AdminFeatures: {
-          include: {
-            AdminSubFeatures: true,
-          },
-        },
-      },
+      select: {
+        id: true,
+        roleName: true,
+      }
     });
 
     return res.json({

@@ -398,7 +398,7 @@ export const getNewsByCategory = async (req, res) => {
   try {
     const findNews = await prisma.news.findMany({
       where: {
-        category: category,
+        Category: category,
         NOT: {
           id: id,
         },
